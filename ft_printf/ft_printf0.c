@@ -1,19 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_printf0.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kalmheir <kalmheir@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/15 16:32:16 by kalmheir          #+#    #+#             */
-/*   Updated: 2022/05/15 17:46:07 by kalmheir         ###   ########.fr       */
+/*   Updated: 2022/05/30 18:48:06 by kalmheir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../ft_printf.h"
-
-const char	*g_valid_flags = "cspdiuxX%";
-size_t	g_chars;
 
 /*
  * Function:  ft_printf
@@ -44,19 +41,23 @@ size_t	g_chars;
  */
 int	ft_printf(const char *str, ...)
 {
-	int	num_args;
-	int	*flag_indices;
+	int		num_args;
+	size_t	chars;
+	va_list	args;
+	char	*valid_flags;
 
-	g_chars = 0;
+	valid_flags = "cspdiuxX%";
+	chars = 0;
 	num_args = count_valid_flags(str);
-	flag_indices = malloc(num_args * sizeof(int));
-	if (!flag_indices && num_args)
-		return (0);
 	if (!num_args)
 	{
-		putstrip(str, 1);
-		return (g_chars);
+		putstrip(str, 1, &chars);
+		return (chars);
 	}
+	va_start(args, num_args);
+	iterator(str, &args, &chars);
+	va_end(args);
+	return (chars);
 }
 
 /*
@@ -71,11 +72,14 @@ int	ft_printf(const char *str, ...)
  */
 int	count_valid_flags(const char *str)
 {
+	char	*valid_flags;
+
+	valid_flags = "cspdiuxX%";
 	if (!*str)
 		return (0);
 	if (ft_strchr(str, '%'))
 	{
-		if (ft_strchr(g_valid_flags, *(str + 1)))
+		if (ft_strchr(valid_flags, *(str + 1)))
 			return (1 + count_valid_flags(str + 1));
 		return (count_valid_flags(str + 1));
 	}
@@ -110,44 +114,8 @@ char	*ft_strchr(const char *s, int c)
 	return (0);
 }
 
-/*
- * Function:  putstrip
- * --------------------
- * Prints a string to stdout with the option to ignore
- * percentage signs
- *
- * parameters:
- *  str: string to be printed
- *  ignore_percent: boolean value whether or not to ignore %
- */
-void	putstrip(const char *str, char ignore_percent)
+void	put_charc(char c, size_t *count)
 {
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '%' && ignore_percent)
-		{
-			i++;
-			continue ;
-		}
-		proxy_write(str + i, 1);
-	}
-}
-
-/*
- * Function:  proxy_write
- * --------------------
- * Prints a character to stdout and increments the global
- * counter, used to encapsulate and count write calls
- *
- * parameters:
- *  c: beginning of buffer to be written
- *  amount: number of characters to be written
- */
-void	proxy_write(char *c, int amount)
-{
-	write(STDOUT_FILENO, c, amount);
-	g_chars += amount;
+	(*count)++;
+	write(STDOUT_FILENO, &c, 1);
 }
