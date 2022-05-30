@@ -6,7 +6,7 @@
 /*   By: kalmheir <kalmheir@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/30 18:34:56 by kalmheir          #+#    #+#             */
-/*   Updated: 2022/05/30 18:50:07 by kalmheir         ###   ########.fr       */
+/*   Updated: 2022/05/30 19:11:14 by kalmheir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	put_longhex(unsigned long num, size_t *count)
 void	switcher(char c, va_list *list, size_t *count)
 {
 	if (c == 'c')
-		put_charc(va_arg(*list, char), count);
+		put_charc(va_arg(*list, int), count);
 	else if (c == 's')
 		putstrip(va_arg(*list, char *), 0, count);
 	else if (c == 'p')
@@ -52,16 +52,13 @@ void	iterator(const char *str, va_list *list, size_t *count)
 	while (str[i])
 	{
 		if (str[i] != '%')
-		{
-			count++;
-			write(STDOUT_FILENO, &str[i], 1);
-		}
+			put_charc(str[i], count);
 		else
 		{
 			i++;
 			if (str[i] == 0)
 				break ;
-			switcher(str[i], list, &count);
+			switcher(str[i], list, count);
 		}
 		i++;
 	}

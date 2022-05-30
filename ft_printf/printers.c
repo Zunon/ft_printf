@@ -6,7 +6,7 @@
 /*   By: kalmheir <kalmheir@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/30 18:33:34 by kalmheir          #+#    #+#             */
-/*   Updated: 2022/05/30 18:34:47 by kalmheir         ###   ########.fr       */
+/*   Updated: 2022/05/30 19:15:53 by kalmheir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,11 @@ void	putstrip(const char *str, char ignore_percent, size_t *count)
 	int	i;
 
 	i = 0;
+	if (str == 0)
+	{
+		putstrip("(null)", 0, count);
+		return ;
+	}
 	while (str[i])
 	{
 		if (str[i] == '%' && ignore_percent)
